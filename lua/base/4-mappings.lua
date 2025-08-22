@@ -130,8 +130,6 @@ maps.n["<Tab>"] = {
 --      is the keycode for scrolling, and remapping it would break it.
 if not is_android then
   -- only useful when the option clipboard is commented on ./1-options.lua
-  maps.n["<C-y>"] = { '"+y<esc>', desc = "Copy to cliboard" }
-  maps.x["<C-y>"] = { '"+y<esc>', desc = "Copy to cliboard" }
   maps.n["<C-d>"] = { '"+y<esc>dd', desc = "Copy to clipboard and delete line" }
   maps.x["<C-d>"] = { '"+y<esc>dd', desc = "Copy to clipboard and delete line" }
   maps.n["<C-p>"] = { '"+p<esc>', desc = "Paste from clipboard" }
@@ -211,56 +209,6 @@ maps.x["<S-Tab>"] = { "<gv", desc = "unindent line" }
 maps.x["<Tab>"] = { ">gv", desc = "indent line" }
 maps.x["<"] = { "<gv", desc = "unindent line" }
 maps.x[">"] = { ">gv", desc = "indent line" }
-
--- improved gg --------------------------------------------------------------
-maps.n["gg"] = {
-  function()
-    vim.g.minianimate_disable = true
-    if vim.v.count > 0 then
-      vim.cmd("normal! " .. vim.v.count .. "gg")
-    else
-      vim.cmd("normal! gg0")
-    end
-    vim.g.minianimate_disable = false
-  end,
-  desc = "gg and go to the first position",
-}
-maps.n["G"] = {
-  function()
-    vim.g.minianimate_disable = true
-    vim.cmd("normal! G$")
-    vim.g.minianimate_disable = false
-  end,
-  desc = "G and go to the last position",
-}
-maps.x["gg"] = {
-  function()
-    vim.g.minianimate_disable = true
-    if vim.v.count > 0 then
-      vim.cmd("normal! " .. vim.v.count .. "gg")
-    else
-      vim.cmd("normal! gg0")
-    end
-    vim.g.minianimate_disable = false
-  end,
-  desc = "gg and go to the first position (visual)",
-}
-maps.x["G"] = {
-  function()
-    vim.g.minianimate_disable = true
-    vim.cmd("normal! G$")
-    vim.g.minianimate_disable = false
-  end,
-  desc = "G and go to the last position (visual)",
-}
-maps.n["<C-a>"] = { -- to move to the previous position press ctrl + oo
-  function()
-    vim.g.minianimate_disable = true
-    vim.cmd("normal! gg0vG$")
-    vim.g.minianimate_disable = false
-  end,
-  desc = "Visually select all",
-}
 
 -- packages -----------------------------------------------------------------
 -- lazy
@@ -1309,19 +1257,34 @@ if is_available("hop.nvim") then
   -- Note that Even though we are using ENTER for hop, you can still select items
   -- from special menus like 'quickfix', 'q?' and 'q:' with <C+ENTER>.
 
+  -- Create a function to check if we're in a quickfix window
+  local function is_quickfix()
+    return vim.bo.filetype == "qf"
+  end
+
   maps.n["<C-m>"] = { -- The terminal undersand C-m and ENTER as the same key.
     function()
-      require("hop")
-      vim.cmd("silent! HopWord")
+      if is_quickfix() then
+        -- Let Enter work normally in quickfix
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+      else
+        require("hop")
+        vim.cmd("silent! HopWord")
+      end
     end,
-    desc = "Hop to word",
+    desc = "Hop to word (disabled in quickfix)",
   }
   maps.x["<C-m>"] = { -- The terminal undersand C-m and ENTER as the same key.
     function()
-      require("hop")
-      vim.cmd("silent! HopWord")
+      if is_quickfix() then
+        -- Let Enter work normally in quickfix
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<CR>", true, false, true), "n", false)
+      else
+        require("hop")
+        vim.cmd("silent! HopWord")
+      end
     end,
-    desc = "Hop to word",
+    desc = "Hop to word (disabled in quickfix)",
   }
 end
 

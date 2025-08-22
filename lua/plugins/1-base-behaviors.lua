@@ -46,6 +46,7 @@ return {
   -- https://github.com/ahmedkhalf/project.nvim
   {
     "zeioth/project.nvim",
+    enabled = false,
     event = "User BaseDefered",
     cmd = "ProjectRoot",
     opts = {
@@ -65,7 +66,7 @@ return {
       exclude_dirs = {
         "~/"
       },
-      silent_chdir = true,
+      silent_chdir = false,
       manual_mode = false,
 
       -- Don't chdir for certain buffers
