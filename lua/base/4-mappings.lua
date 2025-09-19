@@ -114,15 +114,43 @@ maps.n["<leader>q"] = {
       vim.cmd('confirm quit')
     end
   end,
-  desc = "Quit",
-}
-maps.n["<Tab>"] = {
-  "<Tab>",
-  noremap = true,
-  silent = true,
-  expr = false,
-  desc = "FIX: Prevent TAB from behaving like <C-i>, as they share the same internal code",
-}
+   desc = "Quit",
+ }
+ 
+ -- Directory switching
+ local dir_utils_avail, dir_utils = pcall(require, "base.utils.dir_utils")
+ if dir_utils_avail then
+   maps.n["<leader>ed"] = {
+     function() dir_utils.set_cwd_to_subdir() end,
+     desc = "Change working directory to subdirectory",
+   }
+   maps.n["<leader>ep"] = {
+     function() vim.cmd("cd %:p:h") vim.notify("Changed to file directory: " .. vim.fn.getcwd()) end,
+     desc = "Change to current file's directory",
+   }
+   maps.n["<leader>er"] = {
+     function() 
+       if vim.fn.executable("git") == 1 then
+         local root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
+         if root ~= "" then
+           vim.cmd("cd " .. vim.fn.trim(root))
+           vim.notify("Changed to git root: " .. vim.fn.getcwd())
+         else
+           vim.notify("Not in a git repository", vim.log.levels.WARN)
+         end
+       end
+     end,
+     desc = "Change to git root directory",
+   }
+ end
+ 
+ maps.n["<Tab>"] = {
+   "<Tab>",
+   noremap = true,
+   silent = true,
+   expr = false,
+   desc = "FIX: Prevent TAB from behaving like <C-i>, as they share the same internal code",
+ }
 
 -- clipboard ---------------------------------------------------------------
 
@@ -874,14 +902,39 @@ if is_available("telescope.nvim") then
     end,
     desc = "Find words in project",
   }
-  maps.n["<leader>fF"] = {
-    function() require("telescope.builtin").live_grep() end,
-    desc = "Find words in project (no hidden)",
-  }
-  maps.n["<leader>f/"] = {
-    function() require("telescope.builtin").current_buffer_fuzzy_find() end,
-    desc = "Find words in current buffer",
-  }
+   maps.n["<leader>fF"] = {
+     function() require("telescope.builtin").live_grep() end,
+     desc = "Find words in project (no hidden)",
+   }
+   maps.n["<leader>f/"] = {
+     function() require("telescope.builtin").current_buffer_fuzzy_find() end,
+     desc = "Find words in current buffer",
+   }
+
+   -- Directory utilities for limiting search scope
+   local dir_utils_avail, dir_utils = pcall(require, "base.utils.dir_utils")
+   if dir_utils_avail then
+     maps.n["<leader>fd"] = {
+       function() dir_utils.set_search_dir() end,
+       desc = "Set search directory limit",
+     }
+     maps.n["<leader>fD"] = {
+       function() dir_utils.clear_search_dir() end,
+       desc = "Clear search directory limit",
+     }
+     maps.n["<leader>fs"] = {
+       function() dir_utils.show_search_status() end,
+       desc = "Show search directory status",
+     }
+     maps.n["<leader>fl"] = {
+       function() dir_utils.telescope_live_grep() end,
+       desc = "Live grep in limited directory",
+     }
+     maps.n["<leader>ffl"] = {
+       function() dir_utils.telescope_find_files() end,
+       desc = "Find files in limited directory",
+     }
+   end
 
   -- Some lsp keymappings are here because they depend on telescope
   maps.n["<leader>l"] = icons.l
