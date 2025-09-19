@@ -31,9 +31,9 @@ return {
               adapters = {
                   openai_compatible = function()
                       return require("codecompanion.adapters").extend("openai_compatible", {
-                          url = "http://ted-cat-avery:4000/v1/chat/completions",
+                          url = "http://Mac:8080/v1/chat/completions",
                           env = {
-                              url = "http://ted-cat-avery:4000",
+                              url = "http://Mac:8080",
                               api_key = "OPENAI_API_KEY",
                           },
                           schema = {
@@ -53,7 +53,7 @@ return {
                                   -- default = "r1-1776:70b-distill-llama-q8_0",
                                   -- default = "deepseek-r1:32b-qwen-distill-fp16",
                                   -- default = "deepseek-coder-v2:16b-lite-instruct-fp16",
-                                  default = "qwen3:32b-fp16",
+                                  default = "Glm-4.5-Air",
                               },
                               num_ctx = {
                                   default = 32768,
@@ -61,17 +61,17 @@ return {
                           },
                       })
                   end,
-                  my_openai = function()
+                  OutpostAI = function()
                       return require("codecompanion.adapters").extend("openai_compatible", {
                           env = {
-                              url = "http://ted-cat-avery:4000", -- optional: default value is ollama url http://127.0.0.1:11434
+                              url = "http://Mac:8080", -- optional: default value is ollama url http://127.0.0.1:11434
                               api_key = "OpenAI_API_KEY", -- optional: if your endpoint is authenticated
                               chat_url = "/v1/chat/completions", -- optional: default value, override if different
                               models_endpoint = "/v1/models", -- optional: attaches to the end of the URL to form the endpoint to retrieve models
                           },
                           schema = {
                               model = {
-                                  default = "premium",  -- define llm model to be used
+                                  default = "Glm-4.5-Air",
                               },
                               temperature = {
                                   order = 2,
@@ -128,12 +128,17 @@ return {
                   end,
               },
               strategies = {
-                  chat = { adapter = "ollama", },
+                  -- chat = { adapter = "ollama", },
+                  -- inline = { adapter = "ollama", },
+                  -- agent = { adapter = "ollama", },
+                  --
                   -- chat = { adapter = "openai_compatible", },
-                  inline = { adapter = "ollama", },
                   -- inline = { adapter = "openai_compatible", },
-                  agent = { adapter = "ollama", },
                   -- agent = { adapter = "openai_compatible", },
+                  --
+                  chat = { adapter = "OutpostAI", },
+                  inline = { adapter = "OutpostAI", },
+                  agent = { adapter = "OutpostAI", },
               },
               opts = {
                   log_level = 'DEBUG', -- TRACE|DEBUG|ERROR|INFO
@@ -161,8 +166,8 @@ return {
         ollama = {
           ["local"] = true,
 --        endpoint = "http://ted-cat-avery:4000/v1",
-          endpoint = "http://Mac:11434/v1",
-          model = "deepseek-coder-v2:16b-lite-instruct-fp16",
+          endpoint = "http://Mac:8080/v1",
+          model = "Glm-4.5-Air",
           parse_curl_args = function(opts, code_opts)
             return {
               url = opts.endpoint .. "/chat/completions",
