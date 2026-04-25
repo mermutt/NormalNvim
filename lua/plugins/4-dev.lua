@@ -193,6 +193,10 @@ return {
         ["]]"] = false,
       },
     },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function(_, opts)
       require("aerial").setup(opts)
       -- HACK: The first time you open aerial on a session, close all folds.

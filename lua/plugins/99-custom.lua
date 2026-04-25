@@ -29,7 +29,8 @@ return {
         config = function()
             require("codecompanion").setup({
                 adapters = {
-                    openai_compatible = function()
+                    http = {
+                        openai_compatible = function()
                         return require("codecompanion.adapters").extend("openai_compatible", {
                             url = "http://doe:8080/v1/chat/completions",
                             env = {
@@ -43,24 +44,24 @@ return {
                             },
                         })
                     end,
-                    ollama = function()
-                        return require("codecompanion.adapters").extend("ollama", {
-                            env = {
-                                url = "http://doe:11434",
-                            },
-                            schema = {
-                                model = {
-                                    -- default = "r1-1776:70b-distill-llama-q8_0",
-                                    -- default = "deepseek-r1:32b-qwen-distill-fp16",
-                                    -- default = "deepseek-coder-v2:16b-lite-instruct-fp16",
-                                    default = "Glm-4.5-Air",
-                                },
-                                num_ctx = {
-                                    default = 32768,
-                                },
-                            },
-                        })
-                    end,
+                    -- ollama = function()
+                    --     return require("codecompanion.adapters").extend("ollama", {
+                    --         env = {
+                    --             url = "http://doe:11434",
+                    --         },
+                    --         schema = {
+                    --             model = {
+                    --                 -- default = "r1-1776:70b-distill-llama-q8_0",
+                    --                 -- default = "deepseek-r1:32b-qwen-distill-fp16",
+                    --                 -- default = "deepseek-coder-v2:16b-lite-instruct-fp16",
+                    --                 default = "Glm-4.5-Air",
+                    --             },
+                    --             num_ctx = {
+                    --                 default = 32768,
+                    --             },
+                    --         },
+                    --     })
+                    -- end,
                     OutpostAI = function()
                         return require("codecompanion.adapters").extend("openai_compatible", {
                             env = {
@@ -71,61 +72,12 @@ return {
                             },
                             schema = {
                                 model = {
-                                    default = "Glm-4.5-Air",
-                                },
-                                temperature = {
-                                    order = 2,
-                                    mapping = "parameters",
-                                    type = "number",
-                                    optional = true,
-                                    default = 0.8,
-                                    desc = "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. We generally recommend altering this or top_p but not both.",
-                                    validate = function(n)
-                                        return n >= 0 and n <= 2, "Must be between 0 and 2"
-                                    end,
-                                },
-                                max_completion_tokens = {
-                                    order = 3,
-                                    mapping = "parameters",
-                                    type = "integer",
-                                    optional = true,
-                                    default = nil,
-                                    desc = "An upper bound for the number of tokens that can be generated for a completion.",
-                                    validate = function(n)
-                                        return n > 0, "Must be greater than 0"
-                                    end,
-                                },
-                                stop = {
-                                    order = 4,
-                                    mapping = "parameters",
-                                    type = "string",
-                                    optional = true,
-                                    default = nil,
-                                    desc = "Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.",
-                                    validate = function(s)
-                                        return s:len() > 0, "Cannot be an empty string"
-                                    end,
-                                },
-                                logit_bias = {
-                                    order = 5,
-                                    mapping = "parameters",
-                                    type = "map",
-                                    optional = true,
-                                    default = nil,
-                                    desc = "Modify the likelihood of specified tokens appearing in the completion. Maps tokens (specified by their token ID) to an associated bias value from -100 to 100. Use https://platform.openai.com/tokenizer to find token IDs.",
-                                    subtype_key = {
-                                        type = "integer",
-                                    },
-                                    subtype = {
-                                        type = "integer",
-                                        validate = function(n)
-                                            return n >= -100 and n <= 100, "Must be between -100 and 100"
-                                        end,
-                                    },
-                                },
+                                    default = "Gemma-4-26B",
+                                }
                             },
                         })
                     end,
+                    },
                 },
                 strategies = {
                     -- chat = { adapter = "ollama", },
@@ -167,7 +119,7 @@ return {
                     ["local"] = true,
                     --        endpoint = "http://ted-cat-avery:4000/v1",
                     endpoint = "http://doe:8080/v1",
-                    model = "Glm-4.5-Air",
+                    model = "Gemma-4-26B",
                     parse_curl_args = function(opts, code_opts)
                         return {
                             url = opts.endpoint .. "/chat/completions",
